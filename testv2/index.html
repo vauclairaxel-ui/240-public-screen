@@ -1,0 +1,166 @@
+`<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LE 240</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --border: 18px;
+        --accent: #38bdf8;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        min-height: 100vh;
+        background: #000;
+        color: #fff;
+      }
+
+      .deck {
+        width: 100vw;
+        height: 100vh;
+        padding: var(--border);
+        padding-bottom: calc(var(--border) * 3);
+        background: #050505;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .slides {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        border-radius: 24px;
+        overflow: hidden;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 600ms ease;
+        pointer-events: none;
+      }
+
+      .slide.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .slide.text-only {
+        background: radial-gradient(circle at top, #111, #010101);
+        color: #f8fafc;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        gap: 16px;
+        padding: clamp(32px, 8vw, 160px);
+      }
+
+      .slide.text-only h1 {
+        margin: 0;
+        font-size: clamp(2.5rem, 5vw, 4rem);
+        letter-spacing: -0.02em;
+      }
+
+      .slide.text-only p {
+        margin: 0;
+        max-width: 60ch;
+        line-height: 1.6;
+        color: rgba(248, 250, 252, 0.85);
+        font-size: clamp(1.15rem, 2.2vw, 1.5rem);
+      }
+
+      .indicator {
+        position: absolute;
+        bottom: calc(var(--border) * 0.75);
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 12px;
+      }
+
+      .indicator span {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.25);
+        transition: transform 200ms ease, background 200ms ease;
+      }
+
+      .indicator span.active {
+        background: var(--accent);
+        transform: scale(1.35);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="deck">
+      <section class="slides" aria-live="polite">
+        <div class="slide active" data-index="0">
+          <img src="./slides/image001.jpg" alt="Diapositive 1" />
+        </div>
+        <div class="slide" data-index="1">
+          <img src="./slides/image001.jpg" alt="Diapositive 2" />
+        </div>
+        <div class="slide" data-index="2">
+          <img src="./slides/image001.jpg" alt="Diapositive 3" />
+        </div>
+        <div class="slide text-only" data-index="3">
+          <h1>Slide 100% texte</h1>
+          <p>
+            Affiche un message, un plan de cours ou toute autre information sans image. Ajoute
+            simplement la classe <code>text-only</code> pour profiter d’une mise en forme adaptée.
+          </p>
+        </div>
+      </section>
+      <div class="indicator" aria-hidden="true"></div>
+    </main>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const indicator = document.querySelector(".indicator");
+
+      const dots = slides.map((_, index) => {
+        const dot = document.createElement("span");
+        if (index === 0) dot.classList.add("active");
+        indicator.append(dot);
+        return dot;
+      });
+
+      let current = 0;
+
+      function goTo(index) {
+        const nextIndex = (index + slides.length) % slides.length;
+        if (nextIndex === current) return;
+        slides[current].classList.remove("active");
+        dots[current].classList.remove("active");
+        slides[nextIndex].classList.add("active");
+        dots[nextIndex].classList.add("active");
+        current = nextIndex;
+      }
+
+      function setTimer() {
+        return setInterval(() => goTo(current + 1), 5000);
+      }
+
+      let autoTimer = setTimer();
+    </script>
+  </body>
+</html>
