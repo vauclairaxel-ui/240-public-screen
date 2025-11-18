@@ -1,0 +1,182 @@
+`<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LE 240</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #0f172a;
+        --bg-light: #f3f4f6;
+        --text: #f8fafc;
+        --text-dark: #0f172a;
+        --accent: #38bdf8;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        min-height: 100vh;
+        background: radial-gradient(circle at top, #1d4ed8, #020617 70%);
+        color: var(--text);
+      }
+
+      .deck {
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.85);
+        display: flex;
+        flex-direction: column;
+        padding: 64px clamp(48px, 8vw, 140px);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .slides {
+        position: relative;
+        flex: 1;
+      }
+
+      .slide {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        opacity: 0;
+        transform: translateY(10px);
+        transition: opacity 600ms ease, transform 600ms ease;
+        pointer-events: none;
+      }
+
+      .slide.active {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 14px;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: rgba(59, 130, 246, 0.2);
+        color: var(--accent);
+      }
+
+      h1 {
+        font-size: 48px;
+        margin: 18px 0 16px;
+        letter-spacing: -0.04em;
+      }
+
+      p {
+        max-width: 65ch;
+        line-height: 1.7;
+        color: rgba(226, 232, 240, 0.85);
+        font-size: 1.04rem;
+      }
+
+      .indicator {
+        position: absolute;
+        bottom: 32px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 12px;
+      }
+
+      .indicator span {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(148, 163, 184, 0.5);
+        transition: transform 200ms ease, background 200ms ease;
+      }
+
+      .indicator span.active {
+        background: var(--accent);
+        transform: scale(1.35);
+      }
+
+    </style>
+  </head>
+  <body>
+    <main class="deck">
+      <section class="slides" aria-live="polite">
+        <div class="slide active" data-index="0">
+          <span class="badge">intro</span>
+          <h1>Bienvenue sur ce mini diaporama</h1>
+          <p>
+            Cette page fonctionne entièrement en local. Elle peut être copiée sur une clef USB,
+            ouverte hors connexion ou intégrée dans un dossier partagé. Les slides défilent
+            automatiquement pour offrir une boucle continue d’informations.
+          </p>
+        </div>
+
+        <div class="slide" data-index="1">
+          <span class="badge">concept</span>
+          <h1>Structure simple, contenu libre</h1>
+          <p>
+            Chaque slide est un simple bloc HTML (div) avec du texte, des images ou tout autre
+            contenu. Le JavaScript embarqué s’occupe de les afficher l’un après l’autre. Tu peux
+            dupliquer une slide, adapter les styles et jouer avec la mise en page pour raconter une
+            histoire, présenter un produit ou partager un plan de cours.
+          </p>
+        </div>
+
+        <div class="slide" data-index="2">
+          <span class="badge">bonus</span>
+          <h1>Animation fluide côté desktop</h1>
+          <p>
+            Les transitions sont gérées en CSS pour conserver de bonnes performances, et le script
+            fait défiler automatiquement les slides toutes les cinq secondes. Idéal pour un poste
+            fixe ou un poste kiosque qui diffuse une boucle d’informations sans dépendre de
+            frameworks extérieurs.
+          </p>
+        </div>
+      </section>
+      <div class="indicator" aria-hidden="true"></div>
+    </main>
+
+    <script>
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const indicator = document.querySelector(".indicator");
+
+      const dots = slides.map((_, index) => {
+        const dot = document.createElement("span");
+        if (index === 0) dot.classList.add("active");
+        indicator.append(dot);
+        return dot;
+      });
+
+      let current = 0;
+
+      function goTo(index) {
+        const nextIndex = (index + slides.length) % slides.length;
+        if (nextIndex === current) return;
+        slides[current].classList.remove("active");
+        dots[current].classList.remove("active");
+        slides[nextIndex].classList.add("active");
+        dots[nextIndex].classList.add("active");
+        current = nextIndex;
+      }
+
+      function setTimer() {
+        return setInterval(() => goTo(current + 1), 5000);
+      }
+
+      let autoTimer = setTimer();
+    </script>
+  </body>
+</html>
